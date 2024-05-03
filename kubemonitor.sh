@@ -1,32 +1,26 @@
 #!/bin/bash
 
-# Function to monitor ECR repository
-monitor_ecr() {
-    # Check if the ECR URL is reachable
-    
-    ecr_status=$(curl -s -o ecr_status.log -w "%{http_code}" http://ecrlist-ps.computerlab.online/index.php)
+# Define functions for each stage
 
-    if [ "$ecr_status" = "200" ]; then
-        echo "ECR Repository is accessible."
-    else
-        echo "ECR Repository is not accessible."
-    fi
+ecr_check() {
+    curl http://ecrlist-ps.computerlab.online/index.php
 }
 
-# Function to monitor Git repository
-monitor_git() {
-    # Check if the Git repository is reachable
-    curl -s -o git_status.log https://github.com/TheAcademy/pss-orderbook-deploy
-    git_status=$(cat git_status.log | grep "GitHub")
-
-    if [ -n "$git_status" ]; then
-        echo "Git Repository is accessible."
-    else
-        echo "Git Repository is not accessible."
-    fi
+git_check() {
+    curl https://github.com/TheAcademy/pss-orderbook-deploy
 }
 
-# Call monitoring functions
-monitor_ecr
-monitor_git
+number_of_available_images() {
+    curl "https://github.com/TheAcademy/sre-course-infra"
+}
 
+# Execute each stage
+
+echo "=== ECR Check ==="
+ecr_check
+
+echo "=== GIT Check ==="
+git_check
+
+echo "=== Number of available images ==="
+number_of_available_images
